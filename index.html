@@ -23,7 +23,7 @@
 <h1 id="p"> </h1>
 <script>
   //如果小于等于0就显示下班，如果<=0并且小于等于31500000就显示下班 如果大于31500000显示上班还有多久
-
+window.onload = new function (){
   let down = document.getElementById("p");
   let up = document.getElementById("x");
   let uptime = document.getElementById("time");
@@ -59,9 +59,11 @@
       if (number_go_time < 0){
           window.location.reload()
       } else {
+
           let number_go = new Date(number_go_time);
           up.innerHTML = "距离上班还有";
           down.innerHTML = number_go.getHours()-8+":"+number_go.getMinutes()+":"+number_go.getSeconds();
+
       }
 
   }
@@ -76,6 +78,12 @@
           down.innerHTML = number_out.getHours()-8+":"+number_out.getMinutes()+":"+number_out.getSeconds();
       }
   }
+}
+
+
+
+
+
 </script>
 </body>
 </html>

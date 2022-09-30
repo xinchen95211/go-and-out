@@ -19,26 +19,63 @@
   </style>
 </head>
 <body>
-<h1></h1>
-
-  <h1 id="x">距离下班还有</h1><br>
-  <h1 id="p">XX:XX:XX</h1>
+<h1 id="x"> </h1><br>
+<h1 id="p"> </h1>
 <script>
-  let a = new Date("2022-09-30T17:00:00");
-  let endtime = a.getTime();
-  let timex = document.getElementById("p");
-  let number = endtime-(new Date("2022-09-30T08:30:00"));
+  //如果小于等于0就显示下班，如果<=0并且小于等于31500000就显示下班 如果大于31500000显示上班还有多久
 
+  let down = document.getElementById("p");
+  let up = document.getElementById("x");
+  let uptime = document.getElementById("time");
+  //获取当前日期
+  let date = new Date();
+  //获取当前日的下班时间
+  let out = new Date();
+  out.setHours(17);
+  out.setMinutes(15);
+  out.setSeconds(0);
+  //获取当前日的上班时间
+  let go = new Date();
+  go.setHours(8);
+  go.setMinutes(30);
+  go.setSeconds(0);
 
+  //计算下班的时间
+  let number_out_time = out.getTime() - date.getTime();
+  let number_go_time = go.getTime() - date.getTime();
+  //计算现在时间距离下班还有多久
 
-  setInterval(time,1000);
-  function time(){
-  let b = new Date(number);
-  timex.innerText = b.getHours()-8+":"+b.getMinutes()+":"+b.getSeconds();
-    number -= 1000;
+  if (number_out_time <= 0){
+    up.innerHTML = " ";
+    down.innerHTML = "你已经下班了";
+  }else if(number_out_time > 31500000){
+      setInterval(go_fun,1000);
+  }else{
+      setInterval(out_fun,1000);
   }
 
+  function go_fun(){
+      number_go_time -= 1000;
+      if (number_go_time < 0){
+          window.location.reload()
+      } else {
+          let number_go = new Date(number_go_time);
+          up.innerHTML = "距离上班还有";
+          down.innerHTML = number_go.getHours()-8+":"+number_go.getMinutes()+":"+number_go.getSeconds();
+      }
+
+  }
+  function out_fun(){
+      number_out_time -= 1000;
+      if (number_out_time < 0){
+          window.location.reload();
+      }else{
+
+          let number_out = new Date(number_out_time);
+          up.innerHTML = "距离下班还有";
+          down.innerHTML = number_out.getHours()-8+":"+number_out.getMinutes()+":"+number_out.getSeconds();
+      }
+  }
 </script>
 </body>
-
 </html>

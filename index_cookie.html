@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" class="h-100" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>time</title>
+    <!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body{
+        background: url("img/01.jpg") no-repeat;
+      }
+      #zhengti{
+        margin-top: 80px;
+      }
+      input{
+        width: 100%;
+        text-align: center;
+        font-size: 80px;
+        border: 1px solid #6f42c1;
+        background: transparent;
+      }
+      #button{
+        font-size: 45px;
+      }
+      .div_text{
+        font-size: 20px;
+        text-align: left;
+        color: #0dcaf0;
+      }
+      .div2_text{
+        font-size: 40px;
+        text-align: center;
+        color: black;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="zhengti">
+    <div class="col-xs-12 mx-auto div2_text">请选择上下班时间</div>
+    <div class="col-xs-8 col-md-4 mx-auto div_text">上班时间:</div>
+    <div class="d-grid gap-2 col-xs-8 col-md-4 mx-auto">
+      <input type="time" class="" id="go" name="btn_go_time">
+    </div>
+    <div class="col-xs-8 col-sm-12 col-md-4 mx-auto div_text">下班时间:</div>
+    <div class="d-grid gap-2 col-xs-8 col-md-4  mx-auto">
+      <input type="time" class="" id="out" name="btn_out_time">
+
+    </div>
+      <div class="d-grid gap-2 col-xs-12 mx-auto">
+      <button type="submit" class="btn btn-link" id="button" onclick="update_cookie()">确定</button>
+    </div>
+    </div>
+
+  <script>
+    //通过id获取对象
+    let id_go_time = document.getElementById("go");
+    let id_out_time = document.getElementById("out");
+    //更新上下班时间
+    function update_cookie(){
+      //获取时间输入框的value值
+      let go_time_value = id_go_time.value;
+      let out_time_value = id_out_time.value;
+      //对获取到的value值进行判断，如果任意一项未选择则弹出提示
+      if (go_time_value === out_time_value) {
+        alert("选择有误或未选择");
+      } else {
+        document.cookie = "time="+go_time_value +"%"+ out_time_value + ";expires=Thu,01 Jan 2038 00:00:00 GMT;path=/";
+        window.location.replace("index.html");
+      }
+    }
+    //查看cookie
+    function see_cookie(){
+      alert(document.cookie);
+      // window.location.replace("http://localhost:63342/idearead/newtime/index_main.html");
+    }
+    //删除cookie
+    function delete_cookie(){
+      document.cookie = "jiaban_time=;expires=Thu,01 Jan 1970 00:00:00 GMT;path=/";
+      document.cookie = "time=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+  </script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

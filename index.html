@@ -1,89 +1,211 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" class="h-100" xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>time</title>
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <title>Title</title>
   <style>
+      #erro{
+          margin-top: 300px ;
+          text-align: center;
+      }
     h1{
-      text-align: center;
-      font-size: 80px;
-      color:red;
+      font-size: 60px;
+        color: #0a53be;
+        font-family: KaiTi;
     }
     #p{
-      color:#e83e8c;
+      color:blueviolet;
     }
-    body{
-      background: url("https://ss3.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/4b90f603738da9774fe93d56b351f8198718e38d.jpg")no-repeat;
-      background-size: 100%;
+    #top{
+        margin-top: 150px;
+       text-align: center;
+        height: 100px;
+        line-height: 100px;
+    }
+    .body_background{
+      /*background: url("https://ss3.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/4b90f603738da9774fe93d56b351f8198718e38d.jpg")no-repeat;*/
+        background: url("img/01.jpg") no-repeat;
     }
   </style>
 </head>
-<body>
-<h1 id="x"> </h1><br>
-<h1 id="p"> </h1>
+<body class="body_background">
+<div id="top">
+<div class="container">
+<h1 id="x" class="text-center col-xs-12" > </h1>
+ </div>
+<br>
+ <div>
+     <h1 id="p" class="text-center col-xs-12"> </h1>
+ </div>
+    <div>
+        <a href="#" class="text-center col-lg-12" id="jia_ban" onclick="start_jiaban()"></a>
+    </div>
+    <div>
+        <a href="#" class="text-center col-lg-12" id="nojia_ban" onclick="delete_jiaban_cookie()"></a>
+    </div>
+
+</div>
+<div id="erro">
+    <a href="#" class="text-center col-lg-12"  onclick="delete_cookie()">发生错误就点我</a>
+</div>
+
 <script>
-  //如果小于等于0就显示下班，如果<=0并且小于等于31500000就显示下班 如果大于31500000显示上班还有多久
-window.onload = new function (){
-  let down = document.getElementById("p");
-  let up = document.getElementById("x");
-  let uptime = document.getElementById("time");
-  //获取当前日期
-  let date = new Date();
-  //获取当前日的下班时间
-  let out = new Date();
-  out.setHours(17);
-  out.setMinutes(15);
-  out.setSeconds(0);
-  //获取当前日的上班时间
-  let go = new Date();
-  go.setHours(8);
-  go.setMinutes(30);
-  go.setSeconds(0);
+    //判断是否有cookie，如果没有就跳转到cookie获取页
+    let index_cookie = document.cookie;
+    var down = document.getElementById("p");
+    var up = document.getElementById("x");
+    var jiaban = document.getElementById("jia_ban");
+    var nojiaban = document.getElementById("nojia_ban");
+    var today_out_time = new Date();
+    window.onload = function () {
+        if (index_cookie === ""){
+            window.location.replace("index_cookie.html")
+        }else {
+            //获取cookie
+            //分割字符串获取需要的值
+            let time;
+            var jia_ban = "";
+            let cookie_sp1 = index_cookie.split(";");
+            for (let i = 0; i < cookie_sp1.length; i++) {
+                let cookie_sp2 = cookie_sp1[i].split("=");
+                for (let j = 0; j < cookie_sp2.length; j++) {
+                    if (cookie_sp2[j] === "time"){
+                        time = cookie_sp2[j+1];
+                    } else if (cookie_sp2[j] === " jiaban_time"){
+                        jia_ban = cookie_sp2[j+1];
+                    }
+                }
 
-  //计算下班的时间
-  let number_out_time = out.getTime() - date.getTime();
-  let number_go_time = go.getTime() - date.getTime();
-  //计算现在时间距离下班还有多久
+            }
+            //继续分割字符串获取上下班的时间
+            let go_time = time.split("%")[0];
+            let out_time = time.split("%")[1];
+            let go_time_hour = parseInt(go_time.split(":")[0]);
+            let go_time_minutes = parseInt(go_time.split(":")[1]);
+            let out_time_hour = parseInt(out_time.split(":")[0]);
+            let out_time_minutes = parseInt(out_time.split(":")[1]);
+            //判断是否加班
+            if (jia_ban == ""){
+            //获取当前日期
+            let today = new Date();
+            //获取当前日的上班时间
+            var today_go_time = new Date();
+            today_go_time.setHours(go_time_hour);
+            today_go_time.setMinutes(go_time_minutes);
+            today_go_time.setSeconds(0);
+            //获取当前日的下班时间
 
-  if (number_out_time <= 0){
-    up.innerHTML = " ";
-    down.innerHTML = "你已经下班了";
-  }else if(number_out_time > 31500000){
-      setInterval(go_fun,1000);
-  }else{
-      setInterval(out_fun,1000);
-  }
+            today_out_time.setHours(out_time_hour);
+            today_out_time.setMinutes(out_time_minutes);
+            today_out_time.setSeconds(0);
+            //判断是否跨天
+            if (today_out_time.getTime < today_go_time.getTime){
+                today_out_time.setHours(today_out_time.getHours()+24);
+            }
+            //判断是否上班时间
+            let ifgotimes = today_go_time - today;
+            //判断现在是上班时间还是下班时间
+            if (today > today_go_time && today < today_out_time) {
+                setInterval(see_out, 1000);
+            }else {
+                if (ifgotimes > 0 && ifgotimes < 3600000){
+                    setInterval(see_go,1000);
+                }else {
+                    setInterval(see_if_go,1000);
+                    up.innerHTML = " ";
+                    down.innerHTML = "你已经下班了";
+                    jiaban.innerHTML = "不，我还没下班"
+                }
+            }
+                //下班倒计时
+                function see_out() {
+                    let now = +new Date();
+                    let times = (today_out_time - now) / 1000;
+                    if (times < 0){
+                        location.reload();
+                    }else {
+                        up.innerHTML = "距离下班还有";
+                        down.innerHTML = cooldown(times);
 
-  function go_fun(){
-      number_go_time -= 1000;
-      if (number_go_time < 0){
-          window.location.reload()
-      } else {
+                    }
+                }
+            }else {
+                setInterval(jiaban_html,1000);
+            }
+        }
 
-          let number_go = new Date(number_go_time);
-          up.innerHTML = "距离上班还有";
-          down.innerHTML = number_go.getHours()-8+":"+number_go.getMinutes()+":"+number_go.getSeconds();
+        function see_if_go(){
+            let now = +new Date();
+            let ifgotimes = today_go_time - now;
+            if (ifgotimes > 0 && ifgotimes < 3598000){
+                location.reload();
+            }
 
-      }
+        }
+        //上班倒计时
+        function see_go() {
+            let now = +new Date();
+            let times = (today_go_time - now) / 1000;
+            if (times < 0){
+                window.location.reload()
+            } else {
+                up.innerHTML = "距离上班还有";
+                down.innerHTML = cooldown(times);
+            }
+        }
+        function jiaban_html(){
+            let now = +new Date();
+            let srart = +new Date(jia_ban);
+            let times = (now - srart) / 1000;
+                up.innerHTML = "你已加班";
+                down.innerHTML = cooldown2(times);
+            nojiaban.innerHTML = "结束加班了";
+            }
+        }
+        //倒计时时间样式
+        function cooldown(times){
+            let h = parseInt(times / 60 / 60 % 24); //时
+            h = h < 10 ? '0' + h : h;
+            let m = parseInt(times / 60 % 60); //分
+            m = m < 10 ? '0' + m : m;
+            let s = parseInt(times % 60); //秒
+            s = s < 10 ? '0' + s : s;
+            return h+":"+m+":"+s;
+        }
+    function cooldown2(times){
+        let h = parseInt(times / 60 / 60 ); //时
 
-  }
-  function out_fun(){
-      number_out_time -= 1000;
-      if (number_out_time < 0){
-          window.location.reload();
-      }else{
+        let m = parseInt(times / 60 % 60); //分
 
-          let number_out = new Date(number_out_time);
-          up.innerHTML = "距离下班还有";
-          down.innerHTML = number_out.getHours()-8+":"+number_out.getMinutes()+":"+number_out.getSeconds();
-      }
-  }
-}
+        let s = parseInt(times % 60); //秒
 
-
-
+        return h+":"+m+":"+s;
+    }
+        //删除加班cookie
+    function delete_jiaban_cookie(){
+        document.cookie = "jiaban_time=;expires=Thu,01 Jan 1970 00:00:00 GMT;path=/";
+        location.reload()
+    }
+    //删除cookie
+    function delete_cookie(){
+        document.cookie = "jiaban_time=;expires=Thu,01 Jan 1970 00:00:00 GMT;path=/";
+        document.cookie = "time=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+        location.reload()
+    }
+    function start_jiaban(){
+        document.cookie = "jiaban_time="+today_out_time+";expires=Thu,01 Jan 2038 00:00:00 GMT;path=/";
+        location.reload();
+    }
 
 
 </script>
+<script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

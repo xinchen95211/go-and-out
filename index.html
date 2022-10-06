@@ -57,6 +57,7 @@
 </div>
 
 <script>
+    var dataapi = "0101:2,0204:2,0205:2,0206:2,0207:2,0208:2,0210:2,0405:2,0406:2,0407:2,0501:2,0502:2,0503:2,0504:2,0607:2,0608:2,0609:2,0913:2,0914:2,0915:2,1001:2,1002:2,1003:2,1004:2,1005:2,1006:2,1007:2,0402:0,0202:0,0203:0,0424:0,0428:0,0505:0,0507:0,0929:0,1012:0,1008:0,1009:0";
     //判断是否有cookie，如果没有就跳转到cookie获取页
     let index_cookie = document.cookie;
     var down = document.getElementById("p");
@@ -82,7 +83,6 @@
                         jia_ban = cookie_sp2[j+1];
                     }
                 }
-
             }
             //继续分割字符串获取上下班的时间
             let go_time = time.split("%")[0];
@@ -93,50 +93,69 @@
             let out_time_minutes = parseInt(out_time.split(":")[1]);
             //判断是否加班
             if (jia_ban == ""){
+
             //获取当前日期
             let today = new Date();
-            //获取当前日的上班时间
-            var today_go_time = new Date();
-            today_go_time.setHours(go_time_hour);
-            today_go_time.setMinutes(go_time_minutes);
-            today_go_time.setSeconds(0);
-            //获取当前日的下班时间
 
-            today_out_time.setHours(out_time_hour);
-            today_out_time.setMinutes(out_time_minutes);
-            today_out_time.setSeconds(0);
-            //判断是否跨天
-            if (today_out_time.getTime < today_go_time.getTime){
-                today_out_time.setHours(today_out_time.getHours()+24);
-            }
-            //判断是否上班时间
-            let ifgotimes = today_go_time - today;
-            //判断现在是上班时间还是下班时间
-            if (today > today_go_time && today < today_out_time) {
-                setInterval(see_out, 1000);
-            }else {
-                if (ifgotimes > 0 && ifgotimes < 3600000){
-                    setInterval(see_go,1000);
-                }else {
-                    setInterval(see_if_go,1000);
-                    up.innerHTML = " ";
-                    down.innerHTML = "你已经下班了";
-                    jiaban.innerHTML = "不，我还没下班"
+            //获取当前日期是否放假：
+                //获取月份
+                let month = today.getMonth()+1;
+                month = month < 10 ? "0" +month : month;
+                //获取日
+                let date = today.getDate();
+               date = date < 10 ? "0" + date : date;
+                //获取星期
+                let day = today.getDay();
+                let apid1 = apid(month+date+"",day);
+                if (apid1 === 2){
+                    up.innerHTML = "今天放假";
+                }else if(apid1 === 1){
+                    up.innerHTML = "今天是周末";
                 }
-            }
-                //下班倒计时
-                function see_out() {
-                    let now = +new Date();
-                    let times = (today_out_time - now) / 1000;
-                    if (times < 0){
-                        location.reload();
-                    }else {
-                        up.innerHTML = "距离下班还有";
-                        down.innerHTML = cooldown(times);
+                else if (apid1 === 0){
+                    //获取当前日的上班时间
+                    var today_go_time = new Date();
+                    today_go_time.setHours(go_time_hour);
+                    today_go_time.setMinutes(go_time_minutes);
+                    today_go_time.setSeconds(0);
+                    //获取当前日的下班时间
 
+                    today_out_time.setHours(out_time_hour);
+                    today_out_time.setMinutes(out_time_minutes);
+                    today_out_time.setSeconds(0);
+                    //判断是否跨天
+                    if (today_out_time.getTime < today_go_time.getTime){
+                        today_out_time.setHours(today_out_time.getHours()+24);
+                    }
+                    //判断是否上班时间
+                    let ifgotimes = today_go_time - today;
+                    //判断现在是上班时间还是下班时间
+                    if (today > today_go_time && today < today_out_time) {
+                        setInterval(see_out, 1000);
+                    }else {
+                        if (ifgotimes > 0 && ifgotimes < 3600000){
+                            setInterval(see_go,1000);
+                        }else {
+                            setInterval(see_if_go,1000);
+                            up.innerHTML = " ";
+                            down.innerHTML = "你已经下班了";
+                            jiaban.innerHTML = "不，我还没下班"
+                        }
+                    }
+                    //下班倒计时
+                    function see_out() {
+                        let now = +new Date();
+                        let times = (today_out_time - now) / 1000;
+                        if (times < 0){
+                            location.reload();
+                        }else {
+                            up.innerHTML = "距离下班还有";
+                            down.innerHTML = cooldown(times);
+
+                        }
                     }
                 }
-            }else {
+                }else {
                 setInterval(jiaban_html,1000);
             }
         }
@@ -181,11 +200,8 @@
         }
     function cooldown2(times){
         let h = parseInt(times / 60 / 60 ); //时
-
         let m = parseInt(times / 60 % 60); //分
-
         let s = parseInt(times % 60); //秒
-
         return h+":"+m+":"+s;
     }
         //删除加班cookie
@@ -202,7 +218,23 @@
     function start_jiaban(){
         document.cookie = "jiaban_time="+today_out_time+";expires=Thu,01 Jan 2038 00:00:00 GMT;path=/";
         location.reload();
+    }function apid(e,e2){
+        let api_date = dataapi.split(",");
+        for (let string of api_date) {
+            let next_api = string.split(":");
+            if (next_api[0] === e) {
+                return +next_api[1];
+            }
+        }
+        if (e2 === 6 || e2 === 7){
+            return 1;
+        } else {
+            return 0;
+        }
+
     }
+
+    //获取网页
 
 
 </script>
